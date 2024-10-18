@@ -1,4 +1,6 @@
 "use client";
+import { logoutUser } from "@/actions/logout";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -6,13 +8,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
-import TwoFactor from "@/components/twoFactor";
 
 const Profile = () => {
-  const [openTwoFactorDialog, setOpenTwoFactorDialog] =
-    useState<boolean>(false);
+  const router = useRouter();
+
   const [user, setUser] = useState<{
     email: string;
     fullname: string;
@@ -38,26 +41,49 @@ const Profile = () => {
       <CardContent className="space-y-4">
         <div className="flex justify-between items-center border-b pb-1">
           <p>Fullname</p>
-          <p className="bg-gray-300 py-1 px-4 rounded-lg">{user?.fullname}</p>
+          <p className="bg-primary/60 py-1 px-4 rounded-lg">{user?.fullname}</p>
         </div>
         <div className="flex justify-between items-center border-b pb-1">
           <p>Email</p>
-          <p className="bg-gray-300 py-1 px-4 rounded-lg">{user?.email}</p>
+          <p className="bg-primary/60 py-1 px-4 rounded-lg">{user?.email}</p>
         </div>
         <div className="flex justify-between items-center border-b pb-1">
-          <p>Two Factor Authentication</p>
+          <p>
+            Two Factor Authentication{" "}
+            <span
+              className={cn(
+                "text-xs px-2 py-1 rounded-md",
+                user?.isTwoFaEnabled ? "bg-green-600" : "bg-red-600"
+              )}
+            >
+              {user?.isTwoFaEnabled ? "Configured" : "Not Configured"}
+            </span>
+          </p>
           <div>
             {user?.isTwoFaEnabled ? (
-              <span className="px-2 py-1 bg-green-300 rounded-md mr-2">
-                Yes
-              </span>
+              <Button>Disable</Button>
             ) : (
-              <span className="px-2 py-1 bg-red-300 rounded-md mr-2">No</span>
+              <Link
+                href={"/profile/enable-two-fa"}
+                className={buttonVariants({
+                  variant: "default",
+                })}
+              >
+                Edit
+              </Link>
             )}
-            <Button onClick={() => setOpenTwoFactorDialog(true)}>Edit</Button>
           </div>
         </div>
-        {openTwoFactorDialog && <TwoFactor />}
+        <Button
+          variant={"destructive"}
+          className="w-full"
+          onClick={() => {
+            logoutUser();
+            router.refresh();
+          }}
+        >
+          LogOut
+        </Button>
       </CardContent>
     </Card>
   );

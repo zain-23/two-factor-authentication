@@ -1,5 +1,5 @@
 "use client";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -19,6 +19,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { SigninFormSchema } from "@/lib/form.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -53,9 +54,9 @@ const Signin = () => {
         window.location.href = response.url;
       }
       router.push("/profile");
-    } catch (error: any) {
+    } catch (error) {
       toast({
-        title: error.message,
+        title: (error as Error).message,
         variant: "destructive",
       });
     }
@@ -108,6 +109,17 @@ const Signin = () => {
           </CardFooter>
         </form>
       </Form>
+      <CardFooter className="justify-center">
+        Don&apos;t have an account
+        <Link
+          href={"/sign-up"}
+          className={buttonVariants({
+            variant: "link",
+          })}
+        >
+          Create an account
+        </Link>
+      </CardFooter>
     </Card>
   );
 };

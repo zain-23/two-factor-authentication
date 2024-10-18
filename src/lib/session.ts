@@ -43,3 +43,7 @@ export const getCookie = () => {
   const session = cookies().get("session")?.value!;
   return session;
 };
+
+export const logout = async () => {
+  cookies().delete("session");
+};

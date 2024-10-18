@@ -1,6 +1,6 @@
+import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { PROTECTED_ROUTE, PUBLIC_ROUTE } from "./lib/constant";
-import { cookies } from "next/headers";
 import { decrypt } from "./lib/session";
 
 export default async function middleware(req: NextRequest) {
@@ -9,9 +9,9 @@ export default async function middleware(req: NextRequest) {
   const isPrivateRoute = PROTECTED_ROUTE.includes(path);
   // get session from cookie
   const session = await cookies().get("session")?.value;
+  // TODO decrypt cookie
   const payload = await decrypt(session);
 
-  // TODO decrypt cookie
   if (isPrivateRoute && !payload?.payload.userId) {
     return NextResponse.redirect(new URL("/sign-in", req.nextUrl));
   }
@@ -19,7 +19,6 @@ export default async function middleware(req: NextRequest) {
   if (isPublicRoute && payload?.payload.userId) {
     return NextResponse.redirect(new URL("/profile", req.nextUrl));
   }
-
   return NextResponse.next();
 }
 

@@ -1,8 +1,14 @@
-import { db } from "@/lib/db";
+import TwoFaForm from "@/components/twoFaForm";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { decrypt } from "@/lib/session";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
-import React from "react";
 
 const TwoFactorAuthentication = async () => {
   const session = await cookies().get("2fa_challenge")?.value;
@@ -11,15 +17,17 @@ const TwoFactorAuthentication = async () => {
   const payload = await decrypt(session);
   if (!payload?.payload.userId) notFound();
 
-  const user = await db.user.findUnique({
-    where: {
-      id: payload.payload.userId as string,
-    },
-    select: {
-      email: true,
-    },
-  });
-  return <div>TwoFactorAuthentication</div>;
+  return (
+    <Card className="max-w-lg w-full">
+      <CardHeader className="text-center">
+        <CardTitle className="text-2xl">2 Factor Authentication</CardTitle>
+        <CardDescription>Add security layer</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <TwoFaForm apiUrl="/api/auth/verify-two-fa" />
+      </CardContent>
+    </Card>
+  );
 };
 
 export default TwoFactorAuthentication;
