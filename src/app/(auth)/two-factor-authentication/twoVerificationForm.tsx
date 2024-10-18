@@ -1,4 +1,13 @@
 "use client";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import {
   InputOTP,
   InputOTPGroup,
@@ -11,17 +20,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Button } from "./ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "./ui/form";
 
-const TwoFaForm = ({ apiUrl }: { apiUrl: string }) => {
+const TwoVerificationForm = () => {
   const { toast } = useToast();
   const router = useRouter();
   const form = useForm<z.infer<typeof CodeSchema>>({
@@ -33,7 +33,7 @@ const TwoFaForm = ({ apiUrl }: { apiUrl: string }) => {
 
   const onSubmit = async (data: z.infer<typeof CodeSchema>) => {
     try {
-      const response = await fetch(apiUrl, {
+      const response = await fetch("/api/auth/verify-two-fa", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -44,13 +44,6 @@ const TwoFaForm = ({ apiUrl }: { apiUrl: string }) => {
         const result = await response.json();
         throw new Error(result.error);
       }
-      if (response.redirected) {
-        window.location.href = response.url;
-      }
-      const result = await response.json();
-      toast({
-        title: result.message,
-      });
       router.push("/profile");
     } catch (error) {
       console.log("ERROR", error);
@@ -95,4 +88,4 @@ const TwoFaForm = ({ apiUrl }: { apiUrl: string }) => {
   );
 };
 
-export default TwoFaForm;
+export default TwoVerificationForm;

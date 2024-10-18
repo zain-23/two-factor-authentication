@@ -1,4 +1,3 @@
-import TwoFaForm from "@/components/twoFaForm";
 import {
   Card,
   CardContent,
@@ -9,6 +8,7 @@ import {
 import { decrypt } from "@/lib/session";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
+import TwoVerificationForm from "./twoVerificationForm";
 
 const TwoFactorAuthentication = async () => {
   const session = await cookies().get("2fa_challenge")?.value;
@@ -24,7 +24,7 @@ const TwoFactorAuthentication = async () => {
         <CardDescription>Add security layer</CardDescription>
       </CardHeader>
       <CardContent>
-        <TwoFaForm apiUrl="/api/auth/verify-two-fa" />
+        <TwoVerificationForm />
       </CardContent>
     </Card>
   );

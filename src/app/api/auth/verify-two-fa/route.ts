@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import speakeasy from "speakeasy";
 
-export const POST = async (req: NextRequest) => {
+export const POST = async (req: Request) => {
   try {
     // get code
     const { code } = await req.json();
@@ -41,16 +41,18 @@ export const POST = async (req: NextRequest) => {
       token: code,
       window: 1,
     });
+    console.log("isCorrect", isCorrect);
 
     // if code incorrect throw error
     if (!isCorrect) {
       return NextResponse.json({ error: "Incorrect Code" }, { status: 400 });
     }
     // create session and login in user
-    cookies().delete("2fa_challenge");
     await createSession(user.id);
-    return NextResponse.redirect(new URL("/profile", req.nextUrl));
+    cookies().delete("2fa_challenge");
+    return NextResponse.json({ message: "Done" }, { status: 200 });
   } catch (error) {
+    console.error("ERROR", error);
     return NextResponse.json(
       { error: (error as Error).message || "Something went wrong" },
       { status: 500 }
