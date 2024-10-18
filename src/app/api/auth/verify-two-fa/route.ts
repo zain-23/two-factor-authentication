@@ -12,9 +12,15 @@ export const POST = async (req: NextRequest) => {
     const twoFaSecret = cookies().get("2fa_challenge")?.value;
     const payload = await decrypt(twoFaSecret);
     // find user and verify code
+    if (!payload) {
+      return NextResponse.json(
+        { error: "You need first login attempt" },
+        { status: 400 }
+      );
+    }
     const user = await db.user.findUnique({
       where: {
-        id: payload?.payload.userId as string,
+        id: payload.payload.userId as string,
       },
       select: {
         id: true,
